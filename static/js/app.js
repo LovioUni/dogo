@@ -1,4 +1,4 @@
-!(function (s) {
+/**!(function (s) {
   "use strict";
   var e;
   function r() {
@@ -244,3 +244,4 @@
         : s("#checkAll").prop("checked", !1);
     }));
 })(jQuery);
+**/
