@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, jsonify, redirect, url_for
 from entities.user import User
-from flask_login import LoginManager, login_user, login_required, logout_user
+from entities.account import Account
+from entities.transaction import Transaction
+from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from dotenv import load_dotenv
 import os
 
@@ -23,7 +25,19 @@ def signup():
 @app.route('/welcome')
 @login_required
 def welcome():
-    return render_template('welcome.html')
+    print("USER ID:", current_user.id, type(current_user.id))
+
+    account = Account.get_account_by_id(int(current_user.id))
+    print("ACCOUNT:", account)
+
+    transactions = []
+    if account:
+        print("ACCOUNT ID:", account.id)
+        transactions = Transaction.get_transactions_by_account(account.id)
+        print("TRANSACTIONS:", transactions)
+        balance = Transaction.get_balance_by_account(account.id)
+
+    return render_template("welcome.html", account=account, transactions=transactions, balance=balance)
 
 @app.route('/api/users', methods=["POST"])
 def create_user():
