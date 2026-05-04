@@ -80,6 +80,15 @@
 
                                 <li class="menu-title" key="t-apps">Categoría 2</li>
 
+                                {% if current_user.profile.name == 'ADMIN' %}
+                                <li>
+                                    <a href="{{ url_for('logs') }}" class="waves-effect">
+                                        <i class="bx bx-list-ul"></i>
+                                        <span>Log</span>
+                                    </a>
+                                </li>
+                                {% endif %}
+
                                 <li>
                                     <a href="javascript: void(0);" class="has-arrow waves-effect">
                                         <i class="bx bx-calendar"></i>

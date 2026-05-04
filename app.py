@@ -4,6 +4,9 @@ from entities.account import Account
 from entities.transaction import Transaction
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from dotenv import load_dotenv
+from entities.log import Log
+from enums.log_type import LogType
+from enums.profile import Profile
 import os
 
 load_dotenv()
@@ -63,9 +66,22 @@ def login():
     password = data.get("password")
 
     user = User.check_login(email, password)
+
+    if user == "inactive":
+        return jsonify({
+            "success": False,
+            "message": "Tu cuenta está inactiva."
+        }), 403
+    
     if user:
 
         login_user(user)
+        #Invocar al metodo save de log
+        Log.save(
+            LogType.LOGIN,
+            f"Login del usuario {user.email}",
+            user
+        )
         return jsonify({
             "success": True,
             "message": "Sesión inisciada correctamente"
@@ -85,6 +101,15 @@ def load_user(user_id):
 def logout():
     logout_user()
     return redirect(url_for("index"))
+
+@app.route('/logs')
+@login_required
+def logs():
+    if current_user.profile != Profile.ADMIN:
+        return redirect(url_for('welcome'))
+    
+    all_logs = Log.get_all()
+    return render_template('logs.html', logs=all_logs)
 
 if __name__ == '__main__':
     app.run()
